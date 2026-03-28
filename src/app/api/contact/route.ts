@@ -7,26 +7,77 @@ import {
 export const runtime = "nodejs";
 
 /**
- * Hook point for webhook, CRM, transactional email, etc.
- * Replace the body with real side effects when you connect integrations.
+ * LEAD_WEBHOOK_URL — server-only (never use NEXT_PUBLIC_*; the URL must not ship to the browser).
+ *
+ * Local development
+ * -----------------
+ * Create `.env.local` in the project root (same directory as `package.json`, e.g. `perfectETA/.env.local`).
+ * Next.js loads it automatically. Example line:
+ *
+ *   LEAD_WEBHOOK_URL=https://hooks.zapier.com/hooks/catch/ACCOUNT_ID/HOOK_KEY/
+ *
+ * In Zapier: use a “Webhooks by Zapier” → “Catch Hook” trigger, then copy the **Custom Webhook URL**
+ * and paste it as the value above. Restart `next dev` after saving `.env.local`.
+ *
+ * Vercel Production (and Preview if you want leads from preview deploys)
+ * ---------------------------------------------------------------------
+ * Dashboard → your Project → Settings → Environment Variables → add `LEAD_WEBHOOK_URL`
+ * with the same Zapier URL, scoped to **Production** (and **Preview** if needed). Redeploy so the
+ * new variable is available to the serverless `/api/contact` route.
  */
-async function deliverLead(payload: ContactLeadPayload): Promise<void> {
-  void payload;
-  // TODO: webhook / CRM / email — implement using `payload` (see file header).
+async function deliverLead(
+  payload: ContactLeadPayload,
+): Promise<{ ok: true } | { ok: false; httpStatus: number }> {
+  const webhookUrl = process.env.LEAD_WEBHOOK_URL?.trim();
+
+  if (!webhookUrl) {
+    console.error(
+      "[api/contact] LEAD_WEBHOOK_URL is missing. Set it in .env.local (see comment at top of this file).",
+    );
+    return { ok: false, httpStatus: 503 };
+  }
+
+  // Zapier Catch Hook: POST JSON body with this exact shape (strings; message may be "").
+  const body = JSON.stringify({
+    source: "perfectETA.info",
+    submittedAt: new Date().toISOString(),
+    name: payload.name,
+    email: payload.email,
+    phone: payload.phone,
+    message: payload.message ?? "",
+  });
+
+  try {
+    const res = await fetch(webhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body,
+      // Abort if Zapier is slow or unreachable; avoids hanging serverless invocations.
+      signal: AbortSignal.timeout(15_000),
+    });
+
+    // Catch Hook should return 2xx; anything else (4xx/5xx) is treated as delivery failure.
+    if (!res.ok) {
+      console.error(
+        "[api/contact] Webhook responded with error:",
+        res.status,
+        res.statusText,
+      );
+      return { ok: false, httpStatus: 502 };
+    }
+
+    return { ok: true };
+  } catch (err) {
+    console.error("[api/contact] Webhook request failed:", err);
+    return { ok: false, httpStatus: 502 };
+  }
 }
 
 /**
  * POST /api/contact
  *
  * Accepts JSON: { name, email, phone, message? }
- * Returns 200 { ok: true } or 400 { error, fields? }
- *
- * TODO: Forward `data` to your stack, for example:
- * - await fetch(process.env.LEAD_WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
- * - HubSpot Forms API or CRM SDK (server-side token)
- * - GoHighLevel / Zapier Catch Hook
- * - Resend / SendGrid / SES for a notification email
- * - Log to your data warehouse (avoid PII in client-accessible logs)
+ * Returns 200 { ok: true }, 400 validation errors, or 502/503 if Zapier delivery fails.
  */
 export async function POST(request: Request) {
   let json: unknown;
@@ -50,11 +101,21 @@ export async function POST(request: Request) {
     );
   }
 
-  await deliverLead(result.data);
+  const delivery = await deliverLead(result.data);
+  if (!delivery.ok) {
+    // Never include LEAD_WEBHOOK_URL, stack traces, or Zapier bodies in this JSON (client-visible).
+    return NextResponse.json(
+      {
+        error: "delivery_failed",
+        message:
+          "We could not deliver your request right now. Please try again in a few minutes or email us directly.",
+      },
+      { status: delivery.httpStatus },
+    );
+  }
 
   if (process.env.NODE_ENV === "development") {
-    // Dev-only: confirms handler ran without printing personal data
-    console.log("[api/contact] Lead accepted (dev)");
+    console.log("[api/contact] Lead delivered to webhook (dev)");
   }
 
   return NextResponse.json({ ok: true }, { status: 200 });
