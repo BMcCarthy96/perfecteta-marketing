@@ -8,7 +8,7 @@ const destinations = [
     description:
       "From relaxed ocean voyages to intimate river routes—see how cruise travel can fit your style.",
     imageSrc:
-      "https://images.unsplash.com/photo-1548577855-7592f383a406?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1548574505-5e239809ee19?q=80&w=1600&auto=format&fit=crop",
     imageAlt: "Cruise ship on calm blue water at sunset",
   },
   {
