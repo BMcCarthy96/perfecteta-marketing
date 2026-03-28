@@ -24,6 +24,7 @@ export function CtaStripSection() {
         <div className="relative mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <CtaButton
             href={SITE.webinarBookingUrl}
+            external={SITE.webinarBookingExternal}
             variant="secondary"
             className="min-w-[200px]"
           >

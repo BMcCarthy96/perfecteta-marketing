@@ -57,6 +57,7 @@ export function HeroSection() {
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
             <CtaButton
               href={SITE.webinarBookingUrl}
+              external={SITE.webinarBookingExternal}
               variant="secondary"
               className="min-h-[3rem] px-8"
             >

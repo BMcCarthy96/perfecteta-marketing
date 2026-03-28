@@ -73,7 +73,11 @@ export function Header() {
             <LogIn className="h-4 w-4" aria-hidden />
             Member portal
           </Link>
-          <CtaButton href={SITE.webinarBookingUrl} variant="primary">
+          <CtaButton
+            href={SITE.webinarBookingUrl}
+            external={SITE.webinarBookingExternal}
+            variant="primary"
+          >
             Reserve your spot
           </CtaButton>
         </div>
@@ -81,6 +85,7 @@ export function Header() {
         <div className="flex items-center gap-2 lg:hidden">
           <CtaButton
             href={SITE.webinarBookingUrl}
+            external={SITE.webinarBookingExternal}
             variant="primary"
             className="px-4 py-2.5 text-xs sm:text-sm"
           >

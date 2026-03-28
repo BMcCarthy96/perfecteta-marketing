@@ -49,7 +49,11 @@ export default function FaqPage() {
           <CtaButton href={`/#${sectionIds.contact}`} variant="primary">
             Contact us
           </CtaButton>
-          <CtaButton href={SITE.webinarBookingUrl} variant="outline">
+          <CtaButton
+            href={SITE.webinarBookingUrl}
+            external={SITE.webinarBookingExternal}
+            variant="outline"
+          >
             Reserve your spot
           </CtaButton>
         </div>

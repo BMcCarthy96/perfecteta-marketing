@@ -51,7 +51,7 @@ export const faqItems: FaqItem[] = [
     id: "reserve",
     question: "How do I reserve a spot?",
     answer:
-      "Use “Reserve Your Spot” on this site to request information, or complete the contact form with your preferred way to reach you. Our team will follow up with available times and next steps.",
+      "Use “Reserve Your Spot” to open our scheduling page and choose a time. You can also use the contact form on this site for general questions—our team will follow up with next steps.",
   },
   {
     id: "after",

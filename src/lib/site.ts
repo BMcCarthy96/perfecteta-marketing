@@ -1,8 +1,10 @@
 /**
- * Central site configuration — swap URLs when integrations go live.
+ * Central site configuration.
  *
- * TODO: Connect WEBINAR_BOOKING_URL to your Zoom / Calendly / custom scheduler.
- * TODO: MEMBER_PORTAL_URL should point to the live login app (perfectETA.com).
+ * Member login: perfectETA.com (separate from this marketing site).
+ * Primary booking: Zoom scheduler (opens in a new tab).
+ *
+ * TODO: Wire /api/contact to webhook, CRM, or email — see src/app/api/contact/route.ts
  */
 export const SITE = {
   name: "Perfect ETA",
@@ -11,10 +13,14 @@ export const SITE = {
   /** Member authentication lives on a separate domain */
   memberPortalUrl: "https://perfectETA.com",
   /**
-   * Primary webinar / reservation flow — replace with real booking link.
-   * Used by Header CTA, hero, and CTA strip.
+   * Primary webinar booking — Zoom scheduler.
+   * Used by Header, hero, CTA strip, FAQ (Reserve your spot).
    */
-  webinarBookingUrl: "#contact",
+  webinarBookingUrl: "https://scheduler.zoom.us/f/rwez6u42",
+  /** Use with CtaButton `external` so the scheduler opens in a new tab */
+  webinarBookingExternal: true,
+  /** Lead form POST target (Next.js API route) */
+  contactApiPath: "/api/contact",
   supportEmailPlaceholder: "hello@perfectETA.info",
 } as const;
 

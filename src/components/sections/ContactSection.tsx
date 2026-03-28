@@ -40,9 +40,10 @@ export function ContactSection() {
           Request information
         </h2>
         <p className="mt-5 text-base leading-relaxed text-brand-navy/70">
-          Share your details and we’ll follow up with scheduling options. This
-          form is a frontend placeholder—connect it to HubSpot, GoHighLevel,
-          Zapier, or your webhook when ready.
+          Share your details for questions about qualifications or the
+          showcase—we’ll follow up shortly. To pick a webinar time, use{" "}
+          <span className="font-medium text-brand-navy">Reserve your spot</span>{" "}
+          to open our scheduler.
         </p>
       </div>
 
