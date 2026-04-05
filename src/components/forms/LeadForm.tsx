@@ -1,5 +1,7 @@
 "use client";
 
+// make sure to add lead webhook url to the .env.local file for new leads
+
 import { useRef, useState } from "react";
 import { CtaButton } from "@/components/ui/CtaButton";
 import {
@@ -11,6 +13,7 @@ import {
   type ContactLeadFieldErrors,
 } from "@/lib/lead-validation";
 import { SITE } from "@/lib/site";
+import { LucideHeadset } from "lucide-react";
 
 type LeadFormProps = {
   id?: string;
