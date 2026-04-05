@@ -1,7 +1,5 @@
 "use client";
 
-// make sure to add lead webhook url to the .env.local file for new leads
-
 import { useRef, useState } from "react";
 import { CtaButton } from "@/components/ui/CtaButton";
 import {
